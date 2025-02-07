@@ -1,9 +1,8 @@
+mod file_utils;
 use colored::*;
+use file_utils::{check_directory_exists, create_file};
 use rand::Rng;
-use std::env;
-use std::fs::{create_dir_all, File};
 use std::io::{self, Write};
-use std::path::PathBuf;
 use std::process::Command;
 use tokio::time::{sleep, Duration};
 
@@ -30,26 +29,6 @@ fn format_seconds(seconds: u64) -> String {
     let minutes = (seconds % 3600) / 60;
     let seconds = seconds % 60;
     format!("{:02}:{:02}:{:02}", hours, minutes, seconds)
-}
-
-fn create_file(name: &str) -> std::io::Result<File> {
-    let file_path = get_file_path(name)?;
-
-    if file_path.exists() {
-        println!("{}", "File already exists.".red());
-    } else {
-        let file = File::create(&file_path)?;
-        return Ok(file);
-    }
-
-    Ok(File::open(file_path)?)
-}
-
-fn get_file_path(name: &str) -> std::io::Result<PathBuf> {
-    let mut path = env::current_dir()?;
-    path.push("map_data");
-    path.push(name);
-    Ok(path)
 }
 
 fn map_target(ip: &str, port: &str, scan_type: Option<&str>, output_prefix: &str) {
@@ -113,10 +92,12 @@ fn map_target(ip: &str, port: &str, scan_type: Option<&str>, output_prefix: &str
 }
 
 fn main() {
-    let mut map_data_dir = env::current_dir().unwrap();
-    map_data_dir.push("map_data");
-    if !map_data_dir.exists() {
-        create_dir_all(&map_data_dir).expect(&"Failed to create map_data directory.".red());
+    match check_directory_exists("map_data") {
+        Ok(map_data_dir) => println!(
+            "\nNMAP Path: {}",
+            map_data_dir.display().to_string().green()
+        ),
+        Err(e) => eprintln!("Error: {}", e),
     }
 
     let mut target_ip = String::new();
@@ -146,11 +127,6 @@ fn main() {
     io::stdin()
         .read_line(&mut mode_choice)
         .expect(&"Failed to read input.".red());
-
-    println!(
-        "{}",
-        format!("Output Directory: {}", map_data_dir.display()).green()
-    );
 
     let mode_choice = mode_choice.trim().to_lowercase();
     let (min_wait_time, max_wait_time) = if mode_choice == "fast" {
