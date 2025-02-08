@@ -23,6 +23,18 @@ pub fn get_file_path(name: &str) -> io::Result<PathBuf> {
     path.push(name);
     Ok(path)
 }
+/* Function's use will be implemented at a later date.
+use std::fs::{create_dir_all, remove_file, File};
+
+pub fn delete_file(file_path: &str) -> io::Result<()> {
+    match remove_file(file_path) {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            println!("{}", e);
+            Err(e)
+        }
+    }
+}*/
 
 pub fn check_directory_exists(dir_path: &str) -> io::Result<PathBuf> {
     let mut path = env::current_dir()?;
