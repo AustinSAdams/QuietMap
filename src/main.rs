@@ -57,11 +57,9 @@ async fn wait(seconds: u64) {
 }
 
 fn main() {
-    match check_directory_exists("map_data") {
-        Ok(map_data_dir) => println!(
-            "\nNMAP Path: {}",
-            map_data_dir.display().to_string().green()
-        ),
+    let directory = get_input("\nOutput Directory: ");
+    match check_directory_exists(&directory) {
+        Ok(map_data_dir) => println!("NMAP Path: {}", map_data_dir.display().to_string().green()),
         Err(e) => eprintln!("Error: {}", e),
     }
 
@@ -90,7 +88,7 @@ fn main() {
     for i in 0..=4 {
         let flag = scan_flags.get(i % scan_flags.len()).copied().flatten();
 
-        let _ = map_target(&target_ip, &target_port, flag, &file_prefix);
+        let _ = map_target(&target_ip, &target_port, flag, &directory, &file_prefix);
 
         let wait_time = generate_number(min_wait_time, max_wait_time);
         rt.block_on(wait(wait_time.try_into().unwrap()));

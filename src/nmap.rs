@@ -8,6 +8,7 @@ pub fn map_target(
     ip: &str,
     port: &str,
     scan_type: Option<&str>,
+    directory: &str,
     output_prefix: &str,
 ) -> Result<()> {
     let scan_type_str = match scan_type {
@@ -24,7 +25,7 @@ pub fn map_target(
         PREFIX = output_prefix,
         TYPE = scan_type_str
     );
-    match create_file(&file_name) {
+    match create_file(directory, &file_name) {
         Ok(mut file) => {
             let mut command = Command::new("sudo");
 

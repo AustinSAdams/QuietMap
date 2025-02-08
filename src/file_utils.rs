@@ -1,11 +1,11 @@
 use colored::*;
-use std::env;
-use std::fs::{create_dir_all, File};
+use std::fs::create_dir_all;
+use std::fs::File;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-pub fn create_file(name: &str) -> io::Result<File> {
-    let file_path = get_file_path(name)?;
+pub fn create_file(directory: &str, name: &str) -> io::Result<File> {
+    let file_path = get_file_path(directory, name)?;
 
     if file_path.exists() {
         println!("{}", "File already exists.".red());
@@ -17,9 +17,8 @@ pub fn create_file(name: &str) -> io::Result<File> {
     Ok(File::open(file_path)?)
 }
 
-pub fn get_file_path(name: &str) -> io::Result<PathBuf> {
-    let mut path = env::current_dir()?;
-    path.push("map_data");
+pub fn get_file_path(directory: &str, name: &str) -> io::Result<PathBuf> {
+    let mut path = PathBuf::from(directory);
     path.push(name);
     Ok(path)
 }
@@ -37,8 +36,7 @@ pub fn delete_file(file_path: &str) -> io::Result<()> {
 }*/
 
 pub fn check_directory_exists(dir_path: &str) -> io::Result<PathBuf> {
-    let mut path = env::current_dir()?;
-    path.push(dir_path);
+    let path = Path::new(dir_path).canonicalize()?;
     if !path.exists() {
         create_dir_all(&path)?;
     }
