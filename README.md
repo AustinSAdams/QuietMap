@@ -45,13 +45,13 @@ QuietMap is a covert tool designed for automated network mapping, packet collect
 
 ### Nmap Feature
 
-To run the Nmap feature, simply provide the target IP or domain name:
+To run the program, simply enter the following command into your command prompt:
 
 ```bash
 cargo run
 ```
 
-This will initiate a silent scan and store the results in a text file categorized by scan type.
+This will prompt you for an output directory where all the data you request will be stored. To continue, follow the prompts as they appear on the screen.
 
 ### Future Features
 
