@@ -1,66 +1,164 @@
 # QuietMap
 
-QuietMap is a covert tool designed for automated network mapping, packet collection, and server information retrieval. It runs silently and gathers essential data about a target, all while avoiding detection. The project is written in Rust and currently supports the use of **Nmap** for network scanning. **Wireshark** and the **Shodan API** will be integrated in the future for packet analysis and server information collection.
+QuietMap is a covert Python-based OSINT tool designed for automated network mapping, packet collection, and server information retrieval. It silently gathers critical data on a target system with minimal risk of detection. The tool supports **Nmap**-based scanning, with planned integrations for **Wireshark** (packet analysis) and the **Shodan API** (host intel).
+
+---
 
 ## Features
 
-- **Network Mapping (Nmap)**: Quietly maps open ports and services of a target network at random intervals.
-- **Covert Operations**: The tool is designed to work in a way that minimizes detection risks by varying scan intervals and timing.
-- **Data Storage**: Scan results are saved in text files categorized by scan type for easy reference.
-- **Future Integrations**: Planned integrations with **Wireshark** for packet analysis and **Shodan API** for gathering server information.
+- **Network Mapping (Nmap)**: Performs quiet port and service scans on target domains or IPs.
+- **Flag-Driven Functionality**: Each function (e.g., discovery, scanning) can be toggled via CLI flags.
+- **Stealth Operation**: Designed to operate with timing and behavior patterns that minimize detection.
+- **Modular Output**: Stores results in categorized files for later analysis.
+- **Planned Integrations**:
+  - **Wireshark**: Passive packet capture
+  - **Shodan API**: Server and exposure information lookup
+
+---
 
 ## Requirements
 
-- **Rust**: The project is written in Rust. Make sure you have the latest version installed. You can download it from [rust-lang.org](https://www.rust-lang.org/).
-- **Nmap**: For the network scanning feature, you will need **Nmap** installed on your system. You can install it from [nmap.org](https://nmap.org/).
+- **Python 3.8+**
+- **Nmap** (must be installed and accessible in your system PATH)
+- [Optional, planned] Wireshark and Shodan API key
+
+---
 
 ## Installation
 
-1. Clone the repository:
-  
-  ```bash
-  git clone https://github.com/AustinSAdams/QuietMap.git
-  ```
-  
-2. Navigate to the project directory:
-  
-  ```bash
-  cd QuietMap
-  ```
-  
-3. Build the project:
-  
-  ```bash
-  cargo build --release
-  ```
-  
-4. Run the tool:
-  
-  ```bash
-  cargo run
-  ```
-  
+### For Users (Standard Install)
+
+Use this if you're only running the tool:
+
+```bash
+git clone https://github.com/AustinSAdams/QuietMap.git
+cd QuietMap
+pip install .
+```
+
+### For Developers (Editable Install)
+
+Use this if you're modifying or extending the tool:
+
+```bash
+git clone https://github.com/AustinSAdams/QuietMap.git
+cd QuietMap
+pip install -e .
+```
+
+---
 
 ## Usage
 
-### Nmap Feature
-
-To run the Nmap feature, simply provide the target IP or domain name:
+QuietMap uses a command-line interface with distinct subcommands for different operations like reconnaissance and API key management.
 
 ```bash
-cargo run
+quietmap <command> [options]
 ```
 
-This will initiate a silent scan and store the results in a text file categorized by scan type.
+## Reconnaissance
+The `recon` command is used to perform various domain-based reconnaissance modules. By default, if no flags are specified, it runs Network, Ports, and DNS modules.
+```bash
+quietmap recon <domain> [-n] [-p] [-d]
+```
+### Arguments
+- `<domain>`: The target domain (e.g., `example.com`, `127.0.0.1`). This argument is required.
+### Options
+- `-n`, `--network`: Run only network discovery.
+- `-p`, `--ports`: Run only port scanning.
+- `-d`, `--dns`: Run only DNS resolution.
 
-### Future Features
+### Examples
+Run all reconnaissance modules on a domain:
+```bash
+quietmap recon example.com
+```
 
-Once Wireshark and Shodan integrations are added, new commands will be available for packet capture and server information retrieval. Stay tuned for updates!
+Run only port scanning on a domain:
+```bash
+quietmap recon -p example.com
+```
+
+Run port scanning and network discovery on a domain:
+```bash
+quietmap recon -p -n example.com
+```
+
+## API Key Management
+QuietMap provides commands to manage API keys for various services, storing them locally.
+
+### - `add_key`
+Add or update an API key for a specific service.
+```bash
+quietmap add_key <service_name> <key_value>
+```
+**Arguments**
+- `<service_name>`: The name of the API service (e.g., `'shodan'`, `'gemini'`).
+- `<key_value>`: The actual API key string.
+**Example**
+Add or update a Shodan API key:
+```bash
+quietmap add_key shodan abc123
+```
+
+### - `list_keys`
+List all stored API keys or display a specific one.
+```bash
+quietmap list_keys [service_name]
+```
+**Arguments**
+- `<service_name>`: (optional): The specific API service name to display. If not provided, all stored keys will be listed.
+**Examples**
+List all stored API keys:
+```bash
+quietmap list_keys
+```
+Display the Shodan API key:
+```bash
+quietmap list_keys shodan
+```
+
+### - `remove_key`
+Remove a specific API key or all stored API keys.
+```bash
+quietmap remove_key [service_name] [-a | --all]
+```
+**Arguments**
+- `[service_name]` (optional): The specific name of the API service to remove.
+**Options**
+- `-a`, `--all`: A flag to remove ALL stored API keys. Use with caution; this action requires confirmation.
+**Examples**
+Remove the Shodan API key:
+```bash
+quietmap remove_key shodan
+```
+Remove all stored API keys (requires confirmation):
+```bash
+quietmap remove_key -a
+```
+
+---
+
+## Output
+Results are currently printed to the terminal. But, in the future, results will be stored in `output/` with subdirectories or files categorized by module (e.g., `scan-results/`, `dns-info.txt`).
+
+---
+
+## Future Features
+
+- Wireshark integration for passive packet analysis
+- Shodan API module for host information and service exposure
+- Structured JSON reporting
+- Timed/interval scanning automation
+
+---
 
 ## Contributing
 
-Feel free to open issues and pull requests. Contributions to improve the stealth and functionality of the tool are welcome!
+Issues, suggestions, and pull requests are welcome. Focus areas include stealth strategies, feature enhancements, and integrations.
+
+---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License — see [LICENSE](LICENSE) for details.
